@@ -40,7 +40,7 @@ class ClientTicketDetailsService:
                 "id": comment.id,
                 "author": comment.author.name,
                 "created_at": comment.created,
-                "body": comment.plain_body,
+                "body": comment.body,
                 "attachments": [
                     {
                         "name": attachment.file_name,
@@ -79,7 +79,7 @@ if __name__ == "__main__":
     import json
     client_ticket_service = ClientTicketDetailsService(
         params=Filter(
-            id=216
+            id=225
         ),
         url_path='http://',
         x_thebes_answer={'unique_id': '40db7fee-6d60-4d73-824f-1bf87edc4491'}
