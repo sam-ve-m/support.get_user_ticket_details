@@ -1,0 +1,17 @@
+apiVersion: fission.io/v1
+kind: Environment
+metadata:
+  creationTimestamp: null
+  name: get-user-ticket-details-env
+  namespace: default
+spec:
+  builder:
+    command: build
+    image: nexus.sigame.com.br/python-builder-3.8:0.0.1
+  imagepullsecret: ""
+  keeparchive: false
+  poolsize: 3
+  resources: {}
+  runtime:
+    image: nexus.sigame.com.br/python-env-3.8:0.0.3
+  version: 2
