@@ -1,12 +1,17 @@
 # Standards
 from typing import Optional, List
+import os
 
 # Third part
 from pydantic import BaseModel
 from zenpy import Zenpy
 from zenpy.lib.api_objects import User, Ticket, Comment
-from decouple import config
+from decouple import Config, RepositoryEnv
 from nidavellir.src.uru import Sindri
+
+path = os.path.join("/", "app", ".env")
+path = str(path)
+config = Config(RepositoryEnv(path))
 
 
 class ClientTicketDetailsService:
