@@ -1,8 +1,8 @@
 # Standards
 
 # Third part
-from pydantic import BaseModel
+from pydantic import BaseModel, StrictInt
 
 
 class Filter(BaseModel):
-    id: int
+    id: StrictInt
