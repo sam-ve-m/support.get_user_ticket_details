@@ -41,20 +41,21 @@ class ClientTicketDetailsService:
     def add_comments_on_ticket(ticket: dict, comments: List[Comment]):
         comments_normalized = list()
         for comment in comments:
-            comments_normalized.append({
-                "id": comment.id,
-                "author": comment.author.name,
-                "created_at": comment.created,
-                "body": comment.body,
-                "attachments": [
-                    {
-                        "name": attachment.file_name,
-                        "url": attachment.content_url,
-                        "content_type": attachment.content_type
-                    }
-                    for attachment in comment.attachments
-                ]
-            })
+            if comment.public:
+                comments_normalized.append({
+                    "id": comment.id,
+                    "author": comment.author.name,
+                    "created_at": comment.created,
+                    "body": comment.body,
+                    "attachments": [
+                        {
+                            "name": attachment.file_name,
+                            "url": attachment.content_url,
+                            "content_type": attachment.content_type
+                        }
+                        for attachment in comment.attachments
+                    ]
+                })
         ticket.update({"comments": comments_normalized})
 
     @staticmethod
