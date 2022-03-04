@@ -4,4 +4,4 @@
 apiVersion: fission.io/v1
 kind: DeploymentConfig
 name: get-user-ticket-details
-uid: 13b32b8d-e752-4cb1-846a-4755b77f5af8
+uid: c456cabb-22ba-40bb-9c7d-0842c4ae3615

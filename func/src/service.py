@@ -3,11 +3,11 @@ from typing import Optional, List
 import os
 
 # Third part
+from decouple import Config, RepositoryEnv
+from nidavellir import Sindri
 from pydantic import BaseModel
 from zenpy import Zenpy
 from zenpy.lib.api_objects import User, Ticket, Comment
-from decouple import Config, RepositoryEnv
-from nidavellir.src.uru import Sindri
 
 path = os.path.join("/", "app", ".env")
 path = str(path)
@@ -74,7 +74,7 @@ class ClientTicketDetailsService:
         }
 
     def get_user(self) -> Optional[User]:
-        unique_id = self.x_thebes_answer['unique_id']
+        unique_id = self.x_thebes_answer['user']['unique_id']
         if user_results := self.zenpy_client.users(external_id=unique_id):
             user_obj = user_results.values[0]
             return user_obj

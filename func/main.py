@@ -1,11 +1,11 @@
+import asyncio
 import logging
 import json
 from flask import request, Response
-import asyncio
 
 from src.validator import Filter
 from src.service import ClientTicketDetailsService
-from nidavellir.src.uru import Sindri
+from nidavellir import Sindri
 from heimdall_client.bifrost import Heimdall
 
 log = logging.getLogger()
@@ -16,7 +16,7 @@ def fn():
     url_path = request.full_path
     raw_account_changes_params = request.args
     x_thebes_answer = request.headers.get('x-thebes-answer')
-    heimdall_client = Heimdall(logger=log)
+    heimdall_client = Heimdall()
     try:
         http_status = 403
         payload = {"status": False}

@@ -13,5 +13,5 @@ spec:
   poolsize: 3
   resources: {}
   runtime:
-    image: nexus.sigame.com.br/python-env-3.8:0.0.3
+    image: nexus.sigame.com.br/python-env-3.8:0.0.4
   version: 2
