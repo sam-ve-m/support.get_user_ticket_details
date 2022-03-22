@@ -1,17 +1,12 @@
 # Standards
-from typing import Optional, List
-import os
+from typing import List
 
 # Third part
-from decouple import Config, RepositoryEnv, config
+from decouple import config
 from nidavellir import Sindri
 from pydantic import BaseModel
 from zenpy import Zenpy
 from zenpy.lib.api_objects import User, Ticket, Comment
-
-# path = os.path.join("/", "app", ".env")
-# path = str(path)
-# config = Config(RepositoryEnv(path))
 
 
 class TicketDetailsService:
@@ -33,13 +28,21 @@ class TicketDetailsService:
         self.url_path = url_path
         self.x_thebes_answer = x_thebes_answer
 
-    def get_tickets(self) -> dict:
-        ticket = {}
+    def get_user(self) -> User:
+        unique_id = self.x_thebes_answer['user']['unique_id']
+        zenpy_client = self._get_zenpy_client()
+        if user_results := zenpy_client.users(external_id=unique_id):
+            user_obj = user_results.values[0]
+            return user_obj
+        raise Exception('Bad request')
+
+    def get_ticket(self) -> dict:
         user = self.get_user()
-        ticket = self.zenpy_client.tickets(id=self.params['id'])
+        zenpy_client = self._get_zenpy_client()
+        ticket = zenpy_client.tickets(id=self.params['id'])
         if ticket.requester == user:
             ticket = self.obj_ticket_to_dict(ticket)
-            comments = self.zenpy_client.tickets.comments(ticket=ticket)
+            comments = zenpy_client.tickets.comments(ticket=ticket)
             self.add_comments_on_ticket(ticket=ticket, comments=comments)
         return ticket
 
@@ -78,11 +81,3 @@ class TicketDetailsService:
             "update_at": ticket.updated,
             "group": group_name
         }
-
-    def get_user(self) -> User:
-        unique_id = self.x_thebes_answer['user']['unique_id']
-        zenpy_client = self._get_zenpy_client()
-        if user_results := zenpy_client.users(external_id=unique_id):
-            user_obj = user_results.values[0]
-            return user_obj
-        raise Exception('Bad request')

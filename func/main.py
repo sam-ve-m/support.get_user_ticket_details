@@ -1,18 +1,17 @@
-import asyncio
-import logging
-import json
 from flask import request, Response
+import asyncio
+import json
 
-from src.validator import Filter
-from src.service import ClientTicketDetailsService
-from nidavellir import Sindri
+from etria_logger import Gladsheim
 from heimdall_client.bifrost import Heimdall
+from nidavellir import Sindri
+from src.validator import Filter
+from src.service import TicketDetailsService
 
-log = logging.getLogger()
 event_loop = asyncio.get_event_loop()
 
 
-def fn():
+def get_user_ticket_details():
     url_path = request.full_path
     raw_account_changes_params = request.args
     x_thebes_answer = request.headers.get('x-thebes-answer')
@@ -26,7 +25,7 @@ def fn():
                 jwt=x_thebes_answer
             ))
             filter_params = Filter(**raw_account_changes_params)
-            client_account_change_service = ClientTicketDetailsService(
+            client_account_change_service = TicketDetailsService(
                 params=filter_params, url_path=url_path, x_thebes_answer=jwt_content['decoded_jwt']
             )
             ticket = client_account_change_service.get_tickets()
@@ -41,7 +40,8 @@ def fn():
             status=http_status,
         )
     except Exception as e:
-        log.error(str(e), exc_info=e)
+        message = 'Fission: get_user_ticket_details'
+        Gladsheim.error(e, message)
         return Response(
             json.dumps({"error": {"message": str(e)}, "status": False}),
             mimetype="application/json",
