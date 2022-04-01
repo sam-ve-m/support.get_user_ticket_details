@@ -1,6 +1,3 @@
-# Standards
-
-# Third part
 from pydantic import BaseModel, validator
 
 

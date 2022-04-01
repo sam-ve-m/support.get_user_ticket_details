@@ -2,7 +2,7 @@ from unittest.mock import patch
 import pytest
 
 from func.src.service import TicketDetailsService
-from .conftest import StubUser, StubGetUsers, StubGroup, StubTicket, StubComment
+from .stubs import StubUser, StubGetUsers, StubGroup, StubTicket, StubComment
 
 
 @patch.object(TicketDetailsService, '_get_zenpy_client')
@@ -47,10 +47,6 @@ def test_get_tickets(mock_get_user, mock_zenpy_client, client_ticket_details_lis
     assert ticket['description'] == 'descrição teste'
     assert ticket['comments'][0]['id'] == '123'
     assert ticket['comments'][0]['attachments'] == []
-    mock_get_user.called_once()
-    mock_zenpy_client.called_once()
-    mock_zenpy_client().tickets.called_once_with(requester='user123', group=StubGroup())
-    mock_zenpy_client().tickets.comments.called_once()
 
 
 @patch.object(TicketDetailsService, '_get_zenpy_client')
@@ -96,7 +92,7 @@ def test_get_tickets_if_zenpy_client_tickets_comments_was_called(mock_get_user, 
 
 
 def test_obj_ticket_to_dict(client_ticket_details_list_service):
-    ticket = client_ticket_details_list_service.obj_ticket_to_dict(StubTicket(group=StubGroup()))
+    ticket = client_ticket_details_list_service._obj_ticket_to_dict(StubTicket(group=StubGroup()))
 
     assert isinstance(ticket, dict)
     assert ticket['subject'] == 'assunto teste'
@@ -109,18 +105,20 @@ def test_obj_ticket_to_dict(client_ticket_details_list_service):
 
 
 def test_obj_ticket_to_dict_when_not_have_group_name(client_ticket_details_list_service):
-    ticket = client_ticket_details_list_service.obj_ticket_to_dict(StubTicket())
+    ticket = client_ticket_details_list_service._obj_ticket_to_dict(StubTicket())
 
-    assert isinstance(ticket, dict)
-    assert ticket['group'] is None
+    assert isinstance(ticket, StubTicket)
+    assert ticket.group is None
 
 
 def test_add_comments_on_ticket(client_ticket_details_list_service):
-    ticket = client_ticket_details_list_service.obj_ticket_to_dict(StubTicket())
-    client_ticket_details_list_service.add_comments_on_ticket(ticket=ticket, comments=[StubComment()])
+    ticket = client_ticket_details_list_service._obj_ticket_to_dict(StubTicket(group=StubGroup()))
+    client_ticket_details_list_service._add_comments_on_ticket(ticket=ticket, comments=[StubComment()])
+    client_ticket_details_list_service
 
     assert isinstance(ticket, dict)
     assert ticket['comments'][0]['author'] == 'Nome do usuário'
     assert ticket['comments'][0]['body'] == 'corpo do comentário'
     assert ticket['comments'][0]['created_at'] == '22/03/2022'
     assert ticket['comments'][0]['attachments'] == []
+
