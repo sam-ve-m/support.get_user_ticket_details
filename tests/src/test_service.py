@@ -1,6 +1,6 @@
 # Jormungandr
 from func.src.services.get_user_ticket_details import TicketDetailsService
-from func.src.domain.exceptions import InvalidJwtToken, InvalidUniqueId, TicketNotFound
+from func.src.domain.exceptions import InvalidUniqueId, TicketNotFound
 from tests.src.stubs import StubUser, StubGetUsers, StubGroup, StubTicket, StubComment
 
 # Standards
@@ -127,11 +127,9 @@ def test_obj_ticket_to_dict_when_not_have_group_name(client_ticket_details_list_
 def test_add_comments_on_ticket(client_ticket_details_list_service):
     ticket = client_ticket_details_list_service._obj_ticket_to_dict(StubTicket(group=StubGroup()))
     client_ticket_details_list_service._add_comments_on_ticket(ticket=ticket, comments=[StubComment()])
-    client_ticket_details_list_service
 
     assert isinstance(ticket, dict)
     assert ticket['comments'][0]['author'] == 'Nome do usuário'
     assert ticket['comments'][0]['body'] == 'corpo do comentário'
     assert ticket['comments'][0]['created_at'] == '22/03/2022'
     assert ticket['comments'][0]['attachments'] == []
-

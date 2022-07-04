@@ -1,5 +1,5 @@
 # Jormungandr
-from func.src.domain.exceptions import InvalidJwtToken
+from ..domain.exceptions import InvalidJwtToken
 
 # Third party
 from heimdall_client import Heimdall

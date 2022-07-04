@@ -1,33 +1,37 @@
-# Jormungandr
-from func.src.domain.enum import CodeResponse
+# Jormungandr - Onboarding
+from ...domain.enums import InternalCode
 
 # Standards
 from json import dumps
 
 # Third party
 from flask import Response
-from nidavellir import Sindri
 
 
 class ResponseModel:
-    @staticmethod
-    def build_response(success: bool, code: CodeResponse,  message: str = None, result: any = None) -> str:
+    def __init__(self, success: bool, code: InternalCode, message: str = None, result: any = None):
+        self.success = success
+        self.code = code
+        self.message = message
+        self.result = result
+        self.response = self.to_dumps()
+
+    def to_dumps(self) -> str:
         response_model = dumps(
             {
-                "result": result,
-                "message": message,
-                "success": success,
-                "code": code.value,
-            },
-            default=Sindri.resolver,
+                "result": self.result,
+                "message": self.message,
+                "success": self.success,
+                "code": self.code,
+            }
         )
+        self.response = response_model
         return response_model
 
-    @staticmethod
-    def build_http_response(response_model: str, status: int, mimetype: str = "application/json") -> Response:
-        response = Response(
-            response_model,
+    def build_http_response(self, status: int, mimetype: str = "application/json") -> Response:
+        http_response = Response(
+            self.response,
             mimetype=mimetype,
-            status=status.value,
+            status=status,
         )
-        return response
+        return http_response

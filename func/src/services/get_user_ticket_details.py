@@ -1,5 +1,5 @@
 # Jormungandr
-from func.src.domain.exceptions import InvalidUniqueId, TicketNotFound, InvalidTicketRequester
+from ..domain.exceptions import InvalidUniqueId, TicketNotFound, InvalidTicketRequester
 
 # Standards
 from typing import List
@@ -15,6 +15,14 @@ from zenpy.lib.api_objects import User, Ticket, Comment, Attachment
 
 class TicketDetailsService:
     zenpy_client = None
+
+    def __init__(
+        self, params: BaseModel, url_path: str, decoded_jwt: dict
+    ):
+        self.params = params.dict()
+        Sindri.dict_to_primitive_types(self.params)
+        self.url_path = url_path
+        self.decoded_jwt = decoded_jwt
 
     @classmethod
     def _get_zenpy_client(cls):
@@ -33,14 +41,6 @@ class TicketDetailsService:
                 raise ex
         return cls.zenpy_client
 
-    def __init__(
-        self, params: BaseModel, url_path: str, decoded_jwt: dict
-    ):
-        self.params = params.dict()
-        Sindri.dict_to_primitive_types(self.params)
-        self.url_path = url_path
-        self.decoded_jwt = decoded_jwt
-
     def _get_user(self) -> User:
         unique_id = self.decoded_jwt["user"]["unique_id"]
         zenpy_client = self._get_zenpy_client()
@@ -55,7 +55,7 @@ class TicketDetailsService:
         Gladsheim.error(message=message)
         raise InvalidUniqueId
 
-    def _get_ticket(self):
+    def _get_ticket(self) -> Ticket:
         zenpy_client = self._get_zenpy_client()
         ticket_zenpy = zenpy_client.tickets(id=self.params['id'])
         return ticket_zenpy
