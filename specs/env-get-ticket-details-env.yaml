@@ -1,0 +1,38 @@
+apiVersion: fission.io/v1
+kind: Environment
+metadata:
+  creationTimestamp: null
+  name: get-ticket-details-env
+  namespace: default
+spec:
+  builder:
+    command: build
+    container:
+      name: ""
+      resources: {}
+    image: nexus.sigame.com.br/fission-builder-3.8:0.0.1
+  imagepullsecret: ""
+  keeparchive: false
+  poolsize: 3
+  resources: {}
+  runtime:
+    container:
+      name: ""
+      resources: {}
+    image: nexus.sigame.com.br/python-env-3.8:0.0.5
+    podspec:
+      containers:
+        - name: get-ticket-details-env
+          env:
+            - name: ROOT_LOG_LEVEL
+              value: "INFO"
+            - name: ETRIA_LOG_LEVEL
+              value: "INFO"
+            - name: ZENDESK_EMAIL
+              value: "tech@lionx.com.br"
+            - name: ZENDESK_PASSWORD
+              value: "bezfiz-dyhqu3-noqmEg"
+            - name: ZENDESK_SUBDOMAIN
+              value: "sigame"
+
+  version: 2

@@ -1,0 +1,55 @@
+include:
+- ./func/*
+kind: ArchiveUploadSpec
+name: func-8iIE
+
+---
+apiVersion: fission.io/v1
+kind: Package
+metadata:
+  creationTimestamp: null
+  name: get-ticket-details-fn-700962a6-2668-44e9-b55b-2464ff9f444a
+  namespace: default
+spec:
+  deployment:
+    checksum: {}
+  environment:
+    name: get-ticket-details-env
+    namespace: default
+  source:
+    checksum: {}
+    type: url
+    url: archive://func-8iIE
+status:
+  buildstatus: pending
+  lastUpdateTimestamp: "2022-07-04T19:24:35Z"
+
+---
+apiVersion: fission.io/v1
+kind: Function
+metadata:
+  creationTimestamp: null
+  name: get-ticket-details-fn
+  namespace: default
+spec:
+  InvokeStrategy:
+    ExecutionStrategy:
+      ExecutorType: poolmgr
+      MaxScale: 0
+      MinScale: 0
+      SpecializationTimeout: 120
+      TargetCPUPercent: 0
+    StrategyType: execution
+  concurrency: 500
+  environment:
+    name: get-ticket-details-env
+    namespace: default
+  functionTimeout: 60
+  idletimeout: 120
+  package:
+    functionName: main.get_user_ticket_details
+    packageref:
+      name: get-ticket-details-fn-700962a6-2668-44e9-b55b-2464ff9f444a
+      namespace: default
+  requestsPerPod: 1
+  resources: {}
