@@ -1,0 +1,21 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: get-ticket-details-fn-vs
+  namespace: fission
+spec:
+  hosts:
+    - dev.api.siga.me
+  gateways:
+    - develop/dev-istio-gateway
+  http:
+  - match:
+    - uri:
+        prefix: /router/get-ticket-details
+    rewrite:
+      uri: /get-ticket-details
+    route:
+    - destination:
+        host: router.fission.svc.cluster.local
+        port:
+          number: 80
