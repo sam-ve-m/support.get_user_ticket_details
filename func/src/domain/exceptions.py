@@ -7,7 +7,7 @@ class InvalidUniqueId(Exception):
 
 
 class InvalidTicketRequester(Exception):
-    msg = 'No tickets found'
+    msg = 'Invalid ticker owner'
 
 
 class TicketNotFound(Exception):

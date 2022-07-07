@@ -47,7 +47,7 @@ spec:
             - name: HEIMDALL_JWT_REQUIRED_FIELDS
               value: "[]"
             - name: HEIMDALL_REDIS_HOST
-              value: "172.30.19.183"
+              value: "172.30.11.235"
             - name: HEIMDALL_REDIS_PORT
               value: "6379"
             - name: HEIMDALL_REDIS_DB
@@ -55,5 +55,5 @@ spec:
             - name: HEIMDALL_REDIS_USER
               value: "bnd"
             - name: HEIMDALL_REDIS_PASSWORD
-              value: "93uOKu5H"
+              value: "jkl321pqr"
   version: 2

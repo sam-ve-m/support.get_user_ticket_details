@@ -1,7 +1,7 @@
 from pydantic import BaseModel, validator
 
 
-class Filter(BaseModel):
+class TicketDetails(BaseModel):
     id: str
 
     @validator('id')
