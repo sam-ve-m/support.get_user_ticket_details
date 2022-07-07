@@ -79,11 +79,10 @@ def test_get_ticket_if_get_zenpy_client_tickets_was_called(mock_requester_is_the
 
 
 @patch.object(TicketDetailsService, '_get_zenpy_client')
-@patch.object(TicketDetailsService, '_requester_is_the_same_ticket_user')
-def test_get_ticket_details_if_raises(mock_requester_is_the_same_ticket_user, mock_zenpy_client, client_ticket_details_list_service):
-    mock_zenpy_client().tickets.return_value = Exception
+def test_get_ticket_details_if_raises(mock_zenpy_client, client_ticket_details_list_service):
+    mock_zenpy_client().tickets.side_effect = Exception
     with pytest.raises(TicketNotFound):
-        client_ticket_details_list_service.get_ticket_details()
+        client_ticket_details_list_service._get_ticket()
 
 
 @patch.object(TicketDetailsService, '_get_zenpy_client')
