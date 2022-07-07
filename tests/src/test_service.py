@@ -12,11 +12,11 @@ import pytest
 
 @patch.object(TicketDetailsService, '_get_zenpy_client')
 def test_get_user(mock_zenpy_client, client_ticket_details_list_service):
-    mock_zenpy_client().users.return_value = StubGetUsers().append_user(StubUser(external_id=102030))
+    mock_zenpy_client().users.return_value = StubGetUsers().append_user(StubUser(external_id="102030"))
     user = client_ticket_details_list_service._get_user()
 
     assert isinstance(user, StubUser)
-    assert user.external_id == client_ticket_details_list_service.decoded_jwt['user']['unique_id']
+    assert user.external_id == client_ticket_details_list_service.unique_id
 
 
 @patch.object(TicketDetailsService, '_get_zenpy_client')
@@ -30,7 +30,7 @@ def test_get_user_if_zenpy_client_was_called(mock_zenpy_client, client_ticket_de
 def test_get_user_if_zenpy_client_users_was_called(mock_zenpy_client, client_ticket_details_list_service):
     client_ticket_details_list_service._get_user()
 
-    mock_zenpy_client().users.assert_called_once_with(external_id=102030)
+    mock_zenpy_client().users.assert_called_once_with(external_id="102030")
 
 
 @patch.object(TicketDetailsService, '_get_zenpy_client')
@@ -48,10 +48,10 @@ def test_get_ticket_details(mock_requester_is_the_same_ticket_user, mock_zenpy_c
     ticket = client_ticket_details_list_service.get_ticket_details()
 
     assert isinstance(ticket, dict)
-    assert ticket['subject'] == 'assunto teste'
-    assert ticket['description'] == 'descrição teste'
-    assert ticket['comments'][0]['id'] == '123'
-    assert ticket['comments'][0]['attachments'] == []
+    assert ticket["ticket"].get('subject') == 'assunto teste'
+    assert ticket["ticket"].get('description') == 'descrição teste'
+    assert ticket["ticket"]['comments'][0].get('id') == '123'
+    assert ticket["ticket"]['comments'][0].get('attachments') == []
 
 
 @patch.object(TicketDetailsService, '_get_zenpy_client')
@@ -67,7 +67,7 @@ def test_get_ticket_if_requester_is_the_same_ticket_user_was_called(mock_request
 def test_get_ticket_if_get_zenpy_client_was_called(mock_requester_is_the_same_ticket_user, mock_zenpy_client, client_ticket_details_list_service):
     client_ticket_details_list_service.get_ticket_details()
 
-    mock_zenpy_client.assert_called_once_with()
+    mock_zenpy_client.assert_called_once()
 
 
 @patch.object(TicketDetailsService, '_get_zenpy_client')
@@ -79,11 +79,10 @@ def test_get_ticket_if_get_zenpy_client_tickets_was_called(mock_requester_is_the
 
 
 @patch.object(TicketDetailsService, '_get_zenpy_client')
-@patch.object(TicketDetailsService, '_requester_is_the_same_ticket_user')
-def test_get_ticket_details_if_raises(mock_requester_is_the_same_ticket_user, mock_zenpy_client, client_ticket_details_list_service):
-    mock_zenpy_client().tickets.return_value = Exception
+def test_get_ticket_details_if_raises(mock_zenpy_client, client_ticket_details_list_service):
+    mock_zenpy_client().tickets.side_effect = Exception
     with pytest.raises(TicketNotFound):
-        client_ticket_details_list_service.get_ticket_details()
+        client_ticket_details_list_service._get_ticket()
 
 
 @patch.object(TicketDetailsService, '_get_zenpy_client')
@@ -92,16 +91,7 @@ def test_get_tickets_if_zenpy_client_tickets_comments_was_called(mock_requester_
     mock_zenpy_client().tickets.return_value = StubTicket(requester='user123', group=StubGroup())
     client_ticket_details_list_service.get_ticket_details()
 
-    mock_zenpy_client().tickets.comments.assert_called_once_with(ticket={
-        'subject': 'assunto teste',
-        'description': 'descrição teste',
-        'id': None,
-        'status': 'teste',
-        'created_at': 'data de criação',
-        'update_at': 'data de atualização',
-        'group': 'lionx', 'comments': []
-        }
-    )
+    mock_zenpy_client().tickets.comments.assert_called_once()
 
 
 def test_obj_ticket_to_dict(client_ticket_details_list_service):

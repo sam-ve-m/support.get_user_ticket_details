@@ -7,8 +7,6 @@ from typing import List
 # Third party
 from decouple import config
 from etria_logger import Gladsheim
-from nidavellir import Sindri
-from pydantic import BaseModel
 from zenpy import Zenpy
 from zenpy.lib.api_objects import User, Ticket, Comment, Attachment
 
@@ -16,13 +14,9 @@ from zenpy.lib.api_objects import User, Ticket, Comment, Attachment
 class TicketDetailsService:
     zenpy_client = None
 
-    def __init__(
-        self, params: BaseModel, url_path: str, decoded_jwt: dict
-    ):
-        self.params = params.dict()
-        Sindri.dict_to_primitive_types(self.params)
-        self.url_path = url_path
-        self.decoded_jwt = decoded_jwt
+    def __init__(self, ticket_details_validated: dict, unique_id: str):
+        self.ticket_details = ticket_details_validated
+        self.unique_id = unique_id
 
     @classmethod
     def _get_zenpy_client(cls):
@@ -42,37 +36,38 @@ class TicketDetailsService:
         return cls.zenpy_client
 
     def _get_user(self) -> User:
-        unique_id = self.decoded_jwt["user"]["unique_id"]
         zenpy_client = self._get_zenpy_client()
-        user_result = zenpy_client.users(external_id=unique_id)
+        user_result = zenpy_client.users(external_id=self.unique_id)
         if user_result:
             user_zenpy = user_result.values[0]
             return user_zenpy
         message = (
             f"get_user::There is no user with this unique id specified"
-            f"::{self.decoded_jwt['user']['unique_id']}"
+            f"::{self.unique_id}"
         )
         Gladsheim.error(message=message)
         raise InvalidUniqueId
 
     def _get_ticket(self) -> Ticket:
         zenpy_client = self._get_zenpy_client()
-        ticket_zenpy = zenpy_client.tickets(id=self.params['id'])
-        return ticket_zenpy
+        try:
+            ticket_zenpy = zenpy_client.tickets(id=self.ticket_details['id'])
+            return ticket_zenpy
+        except Exception as ex:
+            message = f'get_ticket::There is no ticket with this id {self.ticket_details["id"]}'
+            Gladsheim.info(message=message, error=ex)
+            raise TicketNotFound
 
     def get_ticket_details(self) -> dict:
         zenpy_client = self._get_zenpy_client()
         self._requester_is_the_same_ticket_user()
-        try:
-            ticket_zenpy = zenpy_client.tickets(id=self.params['id'])
-            ticket = self._obj_ticket_to_dict(ticket_zenpy)
-            comments = zenpy_client.tickets.comments(ticket=ticket)
-            treated_ticket = self._add_comments_on_ticket(ticket=ticket, comments=comments)
-            return treated_ticket
-        except Exception as ex:
-            message = f'get_ticket::There is no ticket with this id {self.params["id"]}'
-            Gladsheim.error(message=message, error=ex)
-            raise TicketNotFound
+        ticket_id = self.ticket_details['id']
+        ticket_zenpy = zenpy_client.tickets(id=ticket_id)
+        ticket = self._obj_ticket_to_dict(ticket_zenpy)
+        comments = zenpy_client.tickets.comments(ticket=ticket_zenpy)
+        treated_ticket = self._add_comments_on_ticket(ticket=ticket, comments=comments)
+        result = {"ticket": treated_ticket}
+        return result
 
     def _requester_is_the_same_ticket_user(self) -> bool:
         user_zenpy = self._get_user()
@@ -83,7 +78,7 @@ class TicketDetailsService:
             f"requester_is_the_same_ticket_user::Requester is not the ticket owner::"
             f"Requester:{ticket_zenpy.requester}::Ticket owner user:{user_zenpy}"
         )
-        Gladsheim.error(message=message)
+        Gladsheim.info(message=message)
         raise InvalidTicketRequester
 
     @staticmethod

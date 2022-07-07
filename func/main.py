@@ -1,7 +1,7 @@
 # Jormungandr
 from src.domain.enums import InternalCode
-from src.domain.exceptions import InvalidJwtToken, InvalidUniqueId, TicketNotFound
-from src.domain.validator import Filter
+from src.domain.exceptions import InvalidJwtToken, InvalidUniqueId, TicketNotFound, InvalidTicketRequester
+from src.domain.validator import TicketDetails
 from src.domain.response.model import ResponseModel
 from src.services.jwt import JwtService
 from src.services.get_user_ticket_details import TicketDetailsService
@@ -16,21 +16,19 @@ from flask import request, Response
 
 def get_user_ticket_details() -> Response:
     message = "Jormungandr::get_user_ticket_details"
-    url_path = request.full_path
-    raw_account_changes_params = request.args
+    raw_ticket_details = request.args
     jwt = request.headers.get('x-thebes-answer')
     try:
-        filter_params = Filter(**raw_account_changes_params)
+        ticket_details_validated = TicketDetails(**raw_ticket_details).dict()
         JwtService.apply_authentication_rules(jwt=jwt)
-        decoded_jwt = JwtService.decode_jwt(jwt=jwt)
-        client_account_change_service = TicketDetailsService(
-            params=filter_params,
-            url_path=url_path,
-            decoded_jwt=decoded_jwt,
+        unique_id = JwtService.decode_jwt_and_get_unique_id(jwt=jwt)
+        user_ticket_service = TicketDetailsService(
+            ticket_details_validated=ticket_details_validated,
+            unique_id=unique_id,
         )
-        ticket = client_account_change_service.get_ticket_details()
+        result = user_ticket_service.get_ticket_details()
         response = ResponseModel(
-            result={'Ticket': ticket},
+            result=result,
             success=True,
             code=InternalCode.SUCCESS
         ).build_http_response(status=HTTPStatus.OK)
@@ -46,7 +44,7 @@ def get_user_ticket_details() -> Response:
         return response
 
     except InvalidJwtToken as ex:
-        Gladsheim.error(error=ex, message=f"{message}::Invalid JWT token")
+        Gladsheim.warning(error=ex, message=f"{message}::Invalid JWT token")
         response = ResponseModel(
             success=False,
             code=InternalCode.JWT_INVALID,
@@ -55,12 +53,23 @@ def get_user_ticket_details() -> Response:
         return response
 
     except TicketNotFound as ex:
-        Gladsheim.error(error=ex, message=f"{message}::No ticket was found with the specified id")
+        Gladsheim.info(error=ex, message=f"{message}::No ticket was found with the specified id")
         response = ResponseModel(
+            result={"ticket": None},
             message=ex.msg,
             success=False,
             code=InternalCode.DATA_NOT_FOUND,
-        ).build_http_response(status=HTTPStatus.NOT_FOUND)
+        ).build_http_response(status=HTTPStatus.OK)
+        return response
+
+    except InvalidTicketRequester as ex:
+        Gladsheim.info(error=ex, message=f"{message}::Invalid ticket owner")
+        response = ResponseModel(
+            result={"ticket": None},
+            message=ex.msg,
+            success=False,
+            code=InternalCode.INVALID_OWNER,
+        ).build_http_response(status=HTTPStatus.UNAUTHORIZED)
         return response
 
     except ValueError as ex:

@@ -1,3 +1,6 @@
+from func.src.domain.validator import TicketDetails
+
+
 class Author:
     def __init__(self, name=None):
         self.name = name
@@ -44,3 +47,7 @@ class StubTicket:
         self.created = created or 'data de criação'
         self.updated = updated or 'data de atualização'
         self.group = group or None
+
+
+stub_unique_id = "102030"
+stub_ticket_details_validated = TicketDetails(**{'id': 10}).dict()
