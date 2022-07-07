@@ -47,7 +47,7 @@ spec:
             - name: HEIMDALL_JWT_REQUIRED_FIELDS
               value: "[]"
             - name: HEIMDALL_REDIS_HOST
-              value: "172.30.11.235"
+              value: "lnxbrspkeydbdb01-dev.subpriv.vcndev.oraclevcn.com"
             - name: HEIMDALL_REDIS_PORT
               value: "6379"
             - name: HEIMDALL_REDIS_DB
