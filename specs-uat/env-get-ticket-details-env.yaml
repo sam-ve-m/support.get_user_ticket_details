@@ -33,7 +33,7 @@ spec:
             - name: ZENDESK_PASSWORD
               value: "bezfiz-dyhqu3-noqmEg"
             - name: ZENDESK_SUBDOMAIN
-              value: "sigame"
+              value: "ligainvest"
             - name: HEIMDALL_BUCKET_NAME_KEY
               value: "auth-gateway-keys-uat"
             - name: HEIMDALL_AWS_ACCESS_KEY_ID
