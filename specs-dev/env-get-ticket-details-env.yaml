@@ -53,7 +53,7 @@ spec:
             - name: HEIMDALL_REDIS_DB
               value: "0"
             - name: HEIMDALL_REDIS_USER
-              value: "bnd"
+              value: "heimdal"
             - name: HEIMDALL_REDIS_PASSWORD
-              value: "jkl321pqr"
+              value: "LLOnmUUffhaUHnewIz"
   version: 2
