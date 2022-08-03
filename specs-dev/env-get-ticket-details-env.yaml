@@ -46,14 +46,6 @@ spec:
               value: "heimdall_rsa"
             - name: HEIMDALL_JWT_REQUIRED_FIELDS
               value: "[]"
-            - name: HEIMDALL_REDIS_HOST
-              value: "lnxbrspkeydbdb01-dev.subpriv.vcndev.oraclevcn.com"
-            - name: HEIMDALL_REDIS_PORT
-              value: "6379"
-            - name: HEIMDALL_REDIS_DB
-              value: "0"
-            - name: HEIMDALL_REDIS_USER
-              value: "heimdal"
-            - name: HEIMDALL_REDIS_PASSWORD
-              value: "LLOnmUUffhaUHnewIz"
+            - name: HEIMDALL_REDIS_URL
+              value: "redis://heimdal:LLOnmUUffhaUHnewIz@172.30.11.235:6379?db=1"
   version: 2

@@ -11,7 +11,7 @@ spec:
       name: ""
       resources: {}
     image: nexus.sigame.com.br/fission-builder-3.8:0.0.1
-  imagepullsecret: ""
+  imagepullsecret: "nexus-v3"
   keeparchive: false
   poolsize: 3
   resources: {}
@@ -46,14 +46,6 @@ spec:
               value: "heimdall_rsa"
             - name: HEIMDALL_JWT_REQUIRED_FIELDS
               value: "[]"
-            - name: HEIMDALL_REDIS_HOST
-              value: "172.30.19.183"
-            - name: HEIMDALL_REDIS_PORT
-              value: "6379"
-            - name: HEIMDALL_REDIS_DB
-              value: "0"
-            - name: HEIMDALL_REDIS_USER
-              value: "heimdal"
-            - name: HEIMDALL_REDIS_PASSWORD
-              value: "FBJAnjkqw21yjewkDSA"
+            - name: HEIMDALL_REDIS_URL
+              value: "redis://heimdal:FBJAnjkqw21yjewkDSA@172.30.19.183:6379?db=1"
   version: 2

@@ -14,10 +14,10 @@ spec:
   ingressconfig:
     annotations: null
     host: '*'
-    path: /get-ticket-details
+    path: /support/get-ticket-details
     tls: ""
   method: ""
   methods:
   - GET
   prefix: ""
-  relativeurl: /get-ticket-details
+  relativeurl: /support/get-ticket-details
